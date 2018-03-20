@@ -1,6 +1,6 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 # idea
-/.idea
+.idea
 
 # dependencies
 /node_modules
@@ -10,6 +10,7 @@
 
 # production
 /build
+src/**/*.css
 
 # misc
 .DS_Store
