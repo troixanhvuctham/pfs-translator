@@ -8,7 +8,9 @@
     "node-sass-chokidar": "^1.1.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
+    "react-scripts": "1.1.1",
+    "react-select": "^2.0.0-alpha.8",
+    "reactstrap": "^4.8.0"
   },
   "scripts": {
     "start": "react-scripts start",
