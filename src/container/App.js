@@ -11,6 +11,7 @@ class App extends Component {
           title="Menu Bar"
           iconClassNameRight="muidocs-icon-navigation-expand-more"
         />
+
         <div className="App">
           <header className="App-header">
             <img src={logo} className="App-logo" alt="logo"/>
