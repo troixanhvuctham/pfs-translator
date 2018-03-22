@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {PureComponent, Fragment} from 'react';
 import './App.css';
 import {
     Label,
@@ -12,8 +12,7 @@ import {
 } from 'reactstrap';
 import GoogleTranslate from 'google-translate';
 import Select from 'react-select';
-import 'bootstrap/dist/css/bootstrap.css';
-class App extends Component {
+class App extends PureComponent {
 
     constructor(props) {
         super(props);
@@ -29,9 +28,9 @@ class App extends Component {
         this.translator = GoogleTranslate('AIzaSyDWNvub5X6qVwk8VBqKyvurHGskLGMIJPc');
     }
 
-    translate = (Object) => {
+    translate = (obj) => {
         return new Promise(((resolve, reject) => {
-            this.translator.translate(Object, this.state.targetLanguage, (err, result) => {
+            this.translator.translate(obj, this.state.targetLanguage, (err, result) => {
                 if (err) reject(err);
                 resolve(result);
                 this.downloadFile(result);
@@ -40,11 +39,13 @@ class App extends Component {
     };
 
     handleChooseFile = (event) => {
-        let files = event.target.files;
-        this.fileChosen = files[0];
-        this.setState({
-            desFile: files[0].name.split(".").join("_" + this.state.targetLanguage + "."),
-        })
+        let file = event.target.files[0];
+        if (file) {
+            this.fileChosen = file;
+            this.setState({
+                desFile: file.name.split(".").join("_" + this.state.targetLanguage + "."),
+            })
+        }
     };
 
     convertFile = () => {
@@ -58,12 +59,13 @@ class App extends Component {
 
     handleChangeLanguage = (language) => {
         let desFile = "";
-        if(this.fileChosen){
-            desFile = this.fileChosen.name.split(".").join("_" + language.value + ".");
+        if (this.fileChosen) {
+            let list = this.fileChosen.name.split(".");
+            desFile = `${list[0]}_${language.value}.${list[1]}`;
         }
         this.setState({
             targetLanguage: language.value,
-            desFile: desFile,
+            desFile,
         });
     };
 
@@ -73,18 +75,16 @@ class App extends Component {
         })
     };
     getValues = (text) => {
-        let lines = text.split("\n");
         let values = [];
-        let key = [];
+        this.key = [];
+        const regex = /(.*) = (.*)$/gmu;
+        let line;
 
-        lines.forEach((element) => {
-            if(element.trim()!==""){
-                /(.*) = (.*)$/gmu.exec(element);
-                key.push(RegExp.$1);
-                values.push(RegExp.$2);
-            };
-        });
-        this.key = key;
+        while ((line = regex.exec(text)) !== null) {
+            this.key.push(line[1]);
+            values.push(line[2]);
+        }
+
         return values;
     };
 
@@ -109,8 +109,8 @@ class App extends Component {
     componentDidMount() {
         this.translator.getSupportedLanguages('en', (err, languageCodes) => {
             let componentList = [];
-            languageCodes.map((component) => {
-                componentList.push({value: component.language, label: component.name})
+            languageCodes.map((languageCode) => {
+                componentList.push({value: languageCode.language, label: languageCode.name})
             });
             this.setState({
                 listLanguage: componentList,
@@ -121,51 +121,50 @@ class App extends Component {
     render() {
         return (
             <Fragment>
-                <div>
-                    <header className="App-header">
-                        <h1 className="align-content-center">Welcome</h1>
-                    </header>
-                    <Card>
-                        <CardHeader className="font-weight-bold">
-                            File Translator
-                        </CardHeader>
-                        <CardBody>
-                            <FormGroup row>
-                                <Col xs="12" md="2">
-                                    <Label>File Selector:</Label>
-                                </Col>
-                                <Col xs="12" md="3">
-                                    <Input type="file" onChange={this.handleChooseFile}/>
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Col xs="12" md="2">
-                                    <label>Language: {this.state.language}</label>
-                                </Col>
-                                <Col xs="12" md="3">
-                                    <Select options={this.state.listLanguage} onChange={this.handleChangeLanguage} simpleValue
-                                            multi/>
-                                </Col>
-                            </FormGroup>
+                <header className="text-lg-center App-header">
+                    <span className="align-content-center">File Translator Web App</span>
+                </header>
+                <Card>
+                    <CardHeader className="font-weight-bold">
+                        File Translator
+                    </CardHeader>
+                    <CardBody>
+                        <FormGroup row>
+                            <Col xs="12" md="2">
+                                <Label>File Selector:</Label>
+                            </Col>
+                            <Col xs="12" md="3">
+                                <Input type="file" onChange={this.handleChooseFile}/>
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Col xs="12" md="2">
+                                <label>Language: {this.state.language}</label>
+                            </Col>
+                            <Col xs="12" md="3">
+                                <Select options={this.state.listLanguage} onChange={this.handleChangeLanguage}
+                                        simpleValue
+                                        multi/>
+                            </Col>
+                        </FormGroup>
 
-                            <FormGroup row>
-                                <Col xs="12" md="2">
-                                    <Label>Destination File:</Label>
-                                </Col>
-                                <Col xs="12" md="3">
-                                    <Input onChange={this.handleChangeDestination} value={this.state.desFile} />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Col xs="12" md="5">
-                                    <label>{this.state.exportFileName}</label>
-                                    <Button className="float-right" color="success"
-                                            onClick={this.convertFile}>Export</Button>
-                                </Col>
-                            </FormGroup>
-                        </CardBody>
-                    </Card>
-                </div>
+                        <FormGroup row>
+                            <Col xs="12" md="2">
+                                <Label>Destination File:</Label>
+                            </Col>
+                            <Col xs="12" md="3">
+                                <Input onChange={this.handleChangeDestination} value={this.state.desFile}/>
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Col xs="12" md="5">
+                                <label>{this.state.exportFileName}</label>
+                                <Button className="float-right" color="success"
+                                        onClick={this.convertFile}>Export</Button>
+                            </Col>
+                        </FormGroup>
+                    </CardBody>
+                </Card>
             </Fragment>
         );
     }
