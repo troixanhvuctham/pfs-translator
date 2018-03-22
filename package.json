@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.0.0",
     "google-translate": "^2.1.0",
     "material-ui": "^0.20.0",
     "node-sass-chokidar": "^1.1.2",
@@ -10,7 +11,7 @@
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1",
     "react-select": "^2.0.0-alpha.8",
-    "reactstrap": "^4.8.0"
+    "reactstrap": "^5.0.0-alpha.3"
   },
   "scripts": {
     "start": "react-scripts start",
