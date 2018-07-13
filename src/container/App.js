@@ -25,7 +25,7 @@ class App extends PureComponent {
 
         this.key = [];
         this.fileChosen = null;
-        this.translator = GoogleTranslate('AIzaSyDWNvub5X6qVwk8VBqKyvurHGskLGMIJPc');
+        this.translator = GoogleTranslate('AI');
     }
 
     translate = (obj) => {
