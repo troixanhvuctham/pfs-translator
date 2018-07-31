@@ -111,19 +111,21 @@ class App extends Component {
 
         // Define a model for linear regression.
         const model = tf.sequential();
-        model.add(tf.layers.dense({units: 1, inputShape: [1]}));
+        model.add(tf.layers.dense({units: 1, batchInputShape: [null, 1]}));
+        //model.add(tf.layers.dense({units: 2}));
+        model.add(tf.layers.dense({units: 1}));
 
         // Prepare the model for training: Specify the loss and the optimizer.
         model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
 
         // Generate some synthetic data for training.
-        const xs = tf.tensor2d([1, 2, 3, 4,5,6,7,8,9,0], [10, 1]);
-        const ys = tf.tensor2d([1, 2, 3, 4,5,6,7,8,9,0], [10, 1]);
+        const xs = tf.tensor2d([1, 2, 3, 4, 5], [5, 1]);
+        const ys = tf.tensor2d([1, 4, 9, 16,25], [5, 1]);
 
         // Train the model using the data.
         let result;
         let num;
-        model.fit(xs, ys, {epochs: 500}).then(() => {
+        model.fit(xs, ys, {epochs: 1000}).then(() => {
             // Use the model to do inference on a data point the model hasn't seen before:
             result = model.predict(tf.tensor2d([5], [1, 1]));
             model.predict(tf.tensor2d([1], [1, 1])).print();
@@ -131,10 +133,10 @@ class App extends Component {
             model.predict(tf.tensor2d([3], [1, 1])).print();
             model.predict(tf.tensor2d([4], [1, 1])).print();
             let r = model.getWeights();
-            console.log(r[0].dataSync(), r[1].dataSync());
             console.log("#################")
+            console.log(r.toString());
             num = result.dataSync()
-            console.log(num)
+            //console.log(num)
             this.num = num;
         });
     };
